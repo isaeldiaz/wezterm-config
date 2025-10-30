@@ -352,18 +352,32 @@ M.setup = function(opts)
    end)
 
    -- BUILTIN EVENT
-   wezterm.on('format-tab-title', function(tab, _tabs, _panes, _config, hover, max_width)
-      if not tab_list[tab.tab_id] then
-         tab_list[tab.tab_id] = Tab:new()
-         tab_list[tab.tab_id]:set_info(valid_opts, tab, max_width)
-         tab_list[tab.tab_id]:create_cells()
-         return tab_list[tab.tab_id]:render()
-      end
+   -- Tab title formatting
+   wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
+     local pane = tab.active_pane
+     local domain = pane.domain_name
 
-      tab_list[tab.tab_id]:set_info(valid_opts, tab, max_width)
-      tab_list[tab.tab_id]:update_cells(valid_opts, tab.is_active, hover)
-      return tab_list[tab.tab_id]:render()
-   end)
+     -- Choose icon based on domain
+     local icon = '💻'
+     if domain:match('^WSL:') then
+       icon = '🐧'
+     elseif domain ~= 'local' and domain ~= 'local-mux' then
+       icon = '🌐'
+     end
+
+     -- Format: icon + domain name
+     local title = string.format('%s %s', icon, domain)
+
+     -- Add active indicator
+     if tab.is_active then
+       title = '❯ ' .. title
+     end
+
+     return {
+       { Text = ' ' .. title .. ' ' },
+     }
+end)
+
 end
 
 return M
