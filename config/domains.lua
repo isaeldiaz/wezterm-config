@@ -14,27 +14,25 @@ local options = {
 if platform.is_win then
    options.ssh_domains = {
       {
-         name = 'ssh:wsl',
-         remote_address = 'localhost',
+         name = 'USERvm',
+         remote_address = 'USERvm.dyn.int.example.com',
+         username = 'USER',
          multiplexing = 'None',
-         default_prog = { 'fish', '-l' },
-         assume_shell = 'Posix',
+      },
+      {
+         name = 'naboo',
+         remote_address = 'remote-host-2',
+         username = 'USER',
+         multiplexing = 'None',
       },
    }
 
    options.wsl_domains = {
       {
-         name = 'wsl:ubuntu-fish',
-         distribution = 'Ubuntu',
-         username = 'kevin',
-         default_cwd = '/home/kevin',
-         default_prog = { 'fish', '-l' },
-      },
-      {
          name = 'wsl:ubuntu-bash',
-         distribution = 'Ubuntu',
-         username = 'kevin',
-         default_cwd = '/home/kevin',
+         distribution = 'Ubuntu-24.04',
+         username = 'USER',
+         default_cwd = '/home/USER',
          default_prog = { 'bash', '-l' },
       },
    }
