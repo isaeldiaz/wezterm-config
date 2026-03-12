@@ -12,30 +12,13 @@ local options = {
 }
 
 if platform.is_win then
-   options.ssh_domains = {
-      {
-         name = 'USERvm',
-         remote_address = 'USERvm.dyn.int.example.com',
-         username = 'USER',
-         multiplexing = 'None',
-      },
-      {
-         name = 'naboo',
-         remote_address = 'remote-host-2',
-         username = 'USER',
-         multiplexing = 'None',
-      },
-   }
-
-   options.wsl_domains = {
-      {
-         name = 'wsl:ubuntu-bash',
-         distribution = 'Ubuntu-24.04',
-         username = 'USER',
-         default_cwd = '/home/USER',
-         default_prog = { 'bash', '-l' },
-      },
-   }
+   -- Load local domain overrides (not tracked in git, see config/domains_local.lua)
+   local ok, local_domains = pcall(require, 'config.domains_local')
+   if ok then
+      if local_domains.ssh_domains then options.ssh_domains = local_domains.ssh_domains end
+      if local_domains.wsl_domains then options.wsl_domains = local_domains.wsl_domains end
+      if local_domains.unix_domains then options.unix_domains = local_domains.unix_domains end
+   end
 end
 
 return options
