@@ -208,7 +208,15 @@ local key_tables = {
 }
 
 local mouse_bindings = {
-   -- Ctrl-click will open the link under the mouse cursor
+   -- Left-release copies selection to clipboard (replaces the default behaviour
+   -- lost by disable_default_mouse_bindings = true). This is the primary way to
+   -- copy text when not inside tmux.
+   {
+      event = { Up = { streak = 1, button = 'Left' } },
+      mods = 'NONE',
+      action = act.CompleteSelection('ClipboardAndPrimarySelection'),
+   },
+   -- Ctrl-click opens the link under the cursor
    {
       event = { Up = { streak = 1, button = 'Left' } },
       mods = 'CTRL',
