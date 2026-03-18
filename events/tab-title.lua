@@ -90,6 +90,47 @@ local RENDER_VARIANTS = {
    { 'scircle_left', 'wsl', 'title', 'unseen_output', 'padding', 'scircle_right' },
 }
 
+-- Unique icon per domain — add new entries here when new domains are configured
+-- stylua: ignore
+local DOMAIN_ICONS = {
+   ['local']       = nf.md_microsoft_windows, -- 󰖳  Windows local
+   ['local-mux']   = nf.md_microsoft_windows, -- 󰖳
+   ['idiazvm-mux'] = nf.md_server_network,    -- 󰢹  SSH + WezTerm mux
+   ['naboo']       = nf.md_server,            -- 󰒍  SSH plain
+}
+
+-- Shell process names: when one of these is the foreground proc, show CWD instead
+local SHELL_NAMES = {
+   powershell = true, pwsh = true, bash = true,
+   nu = true, zsh = true, fish = true, cmd = true,
+}
+
+local function get_domain_icon(domain)
+   if DOMAIN_ICONS[domain] then return DOMAIN_ICONS[domain] end
+   if domain:match('^WSL:') then return nf.md_ubuntu end -- 󰕈
+   return nf.md_server -- fallback for unknown SSH domains
+end
+
+local function shorten_cwd(path, max_len)
+   if not path or path == '' then return '' end
+   path = path:gsub('\\', '/')
+   path = path:gsub('^/mnt/%a/[Uu]sers/[^/]+', '~')  -- WSL Windows mounts
+   path = path:gsub('^%a:[/\\][Uu]sers/[^/]+', '~')  -- Windows native paths
+   path = path:gsub('^/home/[^/]+', '~')              -- Linux/SSH home
+   if #path > max_len then
+      local parts = {}
+      for p in path:gmatch('[^/]+') do table.insert(parts, p) end
+      if #parts >= 2 then
+         path = parts[#parts - 1] .. '/' .. parts[#parts]
+      elseif #parts == 1 then
+         path = parts[1]
+      end
+   end
+   if #path > max_len then
+      path = path:sub(1, max_len - 1) .. '…'
+   end
+   return path
+end
 
 ---@type table<string, Cells.SegmentColors>
 -- stylua: ignore
@@ -352,31 +393,67 @@ M.setup = function(opts)
    end)
 
    -- BUILTIN EVENT
-   -- Tab title formatting
+   -- Tab title: unique domain icon + smart title (process name or CWD)
    wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
-     local pane = tab.active_pane
-     local domain = pane.domain_name
+      local pane = tab.active_pane
+      local icon = get_domain_icon(pane.domain_name)
 
-     -- Choose icon based on domain
-     local icon = '💻'
-     if domain:match('^WSL:') then
-       icon = '🐧'
-     elseif domain ~= 'local' and domain ~= 'local-mux' then
-       icon = '🌐'
-     end
+      local proc = clean_process_name(pane.foreground_process_name)
+      local title
+      if proc == '' or SHELL_NAMES[proc:lower()] then
+         local cwd_url = pane.current_working_dir
+         if cwd_url then
+            local raw = cwd_url.file_path or tostring(cwd_url):gsub('^file://[^/]*', '')
+            title = shorten_cwd(raw, max_width - 6)
+         end
+         title = (title and title ~= '') and title or (proc ~= '' and proc or pane.domain_name)
+      else
+         title = proc
+      end
 
-     -- Format: icon + domain name
-     local title = string.format('%s %s', icon, domain)
+      local bg   = tab.is_active and '#74c7ec' or (hover and '#5D87A3' or '#45475A')
+      local fg   = tab.is_active and '#11111B' or '#1C1B19'
+      local edge = 'rgba(0, 0, 0, 0.4)'
 
-     -- Add active indicator
-     if tab.is_active then
-       title = '❯ ' .. title
-     end
+      return {
+         { Background = { Color = edge } },
+         { Foreground = { Color = bg   } },
+         { Text = GLYPH_SCIRCLE_LEFT },
+         { Background = { Color = bg   } },
+         { Foreground = { Color = fg   } },
+         { Attribute = { Intensity = 'Bold' } },
+         { Text = ' ' .. icon .. ' ' .. title .. ' ' },
+         { Background = { Color = edge } },
+         { Foreground = { Color = bg   } },
+         { Text = GLYPH_SCIRCLE_RIGHT },
+      }
+   end)
 
-     return {
-       { Text = ' ' .. title .. ' ' },
-     }
-end)
+   -- BUILTIN EVENT
+   -- Window title: active process + CWD, with domain when not local
+   wezterm.on('format-window-title', function(tab, pane, tabs, panes, config)
+      local proc = clean_process_name(pane.foreground_process_name)
+      local domain = pane.domain_name
+      local cwd = ''
+      if pane.current_working_dir then
+         local raw = pane.current_working_dir.file_path
+            or tostring(pane.current_working_dir):gsub('^file://[^/]*', '')
+         cwd = shorten_cwd(raw, 50)
+      end
+
+      local title
+      if proc == '' or SHELL_NAMES[proc:lower()] then
+         title = cwd ~= '' and cwd or proc
+      else
+         title = cwd ~= '' and (proc .. '  ' .. cwd) or proc
+      end
+
+      if domain ~= 'local' and domain ~= 'local-mux' then
+         title = title .. '  [' .. domain .. ']'
+      end
+
+      return title
+   end)
 
 end
 
