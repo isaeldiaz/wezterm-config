@@ -18,11 +18,11 @@ wezterm.on('toggle-mouse-mode', function(window, _pane)
    local overrides = window:get_config_overrides() or {}
 
    -- Determine current effective state: the base config has
-   -- disable_default_mouse_bindings = true, so when there is no
-   -- override the mouse is disabled.
+   -- disable_default_mouse_bindings = false, so when there is no
+   -- override the mouse is enabled.
    local mouse_is_disabled
    if overrides.disable_default_mouse_bindings == nil then
-      mouse_is_disabled = true  -- base config default
+      mouse_is_disabled = false  -- base config default
    else
       mouse_is_disabled = overrides.disable_default_mouse_bindings
    end
