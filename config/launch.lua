@@ -34,7 +34,7 @@ if platform.is_win then
          })
       end
       for _, d in ipairs(local_domains.ssh_domains or {}) do
-         local icon = (d.multiplexing == 'WezTerm') and nf.md_server_network or nf.md_server
+         local icon = (d.multiplexing == 'WezTerm') and nf.dev_arduino or nf.fa_microchip
          table.insert(domain_entries, {
             label = icon .. '  ' .. d.name .. ' (' .. d.remote_address .. ')',
             domain = { DomainName = d.name },

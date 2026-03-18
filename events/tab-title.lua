@@ -95,8 +95,8 @@ local RENDER_VARIANTS = {
 local DOMAIN_ICONS = {
    ['local']       = nf.md_microsoft_windows, -- 󰖳  Windows local
    ['local-mux']   = nf.md_microsoft_windows, -- 󰖳
-   ['idiazvm-mux'] = nf.md_server_network,    -- 󰢹  SSH + WezTerm mux
-   ['naboo']       = nf.md_server,            -- 󰒍  SSH plain
+   ['idiazvm-mux'] = nf.dev_arduino,          --   SSH + WezTerm mux
+   ['naboo']       = nf.fa_microchip,         --   SSH plain
 }
 
 -- Shell process names: when one of these is the foreground proc, show CWD instead
@@ -107,8 +107,8 @@ local SHELL_NAMES = {
 
 local function get_domain_icon(domain)
    if DOMAIN_ICONS[domain] then return DOMAIN_ICONS[domain] end
-   if domain:match('^WSL:') then return nf.md_ubuntu end -- 󰕈
-   return nf.md_server -- fallback for unknown SSH domains
+   if domain:match('^WSL:') then return nf.dev_ubuntu end
+   return nf.fa_microchip -- fallback for unknown SSH domains
 end
 
 local function shorten_cwd(path, max_len)
