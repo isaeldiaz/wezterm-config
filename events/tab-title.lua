@@ -415,7 +415,15 @@ M.setup = function(opts)
       local fg   = tab.is_active and '#11111B' or '#1C1B19'
       local edge = 'rgba(0, 0, 0, 0.4)'
 
-      local has_running_proc = proc ~= '' and not SHELL_NAMES[proc:lower()]
+      -- For plain SSH domains (multiplexing='None'), foreground_process_name
+      -- returns the local ssh client, not the remote process — use unseen output
+      -- as a proxy. Same fallback when the mux doesn't populate the field.
+      local has_running_proc
+      if proc == '' or proc == 'ssh' then
+         has_running_proc = tab.active_pane.has_unseen_output
+      else
+         has_running_proc = not SHELL_NAMES[proc:lower()]
+      end
       local show_indicator   = not tab.is_active and has_running_proc
 
       local cells = {
