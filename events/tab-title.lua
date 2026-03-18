@@ -415,18 +415,31 @@ M.setup = function(opts)
       local fg   = tab.is_active and '#11111B' or '#1C1B19'
       local edge = 'rgba(0, 0, 0, 0.4)'
 
-      return {
+      local has_running_proc = proc ~= '' and not SHELL_NAMES[proc:lower()]
+      local show_indicator   = not tab.is_active and has_running_proc
+
+      local cells = {
          { Background = { Color = edge } },
          { Foreground = { Color = bg   } },
          { Text = GLYPH_SCIRCLE_LEFT },
          { Background = { Color = bg   } },
          { Foreground = { Color = fg   } },
          { Attribute = { Intensity = 'Bold' } },
-         { Text = ' ' .. icon .. ' ' .. title .. ' ' },
-         { Background = { Color = edge } },
-         { Foreground = { Color = bg   } },
-         { Text = GLYPH_SCIRCLE_RIGHT },
+         { Text = ' ' .. icon .. ' ' .. title },
       }
+
+      if show_indicator then
+         table.insert(cells, { Foreground = { Color = '#FFA066' } })
+         table.insert(cells, { Text = ' ' .. nf.md_circle_small })
+      end
+
+      table.insert(cells, { Foreground = { Color = fg   } })
+      table.insert(cells, { Text = ' ' })
+      table.insert(cells, { Background = { Color = edge } })
+      table.insert(cells, { Foreground = { Color = bg   } })
+      table.insert(cells, { Text = GLYPH_SCIRCLE_RIGHT })
+
+      return cells
    end)
 
    -- BUILTIN EVENT
