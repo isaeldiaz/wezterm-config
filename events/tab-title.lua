@@ -90,14 +90,22 @@ local RENDER_VARIANTS = {
    { 'scircle_left', 'wsl', 'title', 'unseen_output', 'padding', 'scircle_right' },
 }
 
--- Unique icon per domain — add new entries here when new domains are configured
+-- Unique icon per domain — built-in entries for local domains.
+-- Machine-specific SSH domains are loaded from events/tab-title-domains.lua (not tracked in git).
 -- stylua: ignore
 local DOMAIN_ICONS = {
-   ['local']       = nf.md_microsoft_windows, -- 󰖳  Windows local
-   ['local-mux']   = nf.md_microsoft_windows, -- 󰖳
-   ['idiazvm-mux'] = nf.dev_arduino,          --   SSH + WezTerm mux
-   ['naboo']       = nf.fa_microchip,         --   SSH plain
+   ['local']     = nf.md_microsoft_windows, -- 󰖳  Windows local
+   ['local-mux'] = nf.md_microsoft_windows, -- 󰖳
 }
+
+do
+   local ok, local_icons = pcall(require, 'events.tab-title-domains')
+   if ok and type(local_icons) == 'table' then
+      for domain, icon in pairs(local_icons) do
+         DOMAIN_ICONS[domain] = icon
+      end
+   end
+end
 
 -- Shell process names: when one of these is the foreground proc, show CWD instead
 local SHELL_NAMES = {

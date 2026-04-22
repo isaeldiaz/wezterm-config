@@ -45,7 +45,18 @@ if platform.is_win then
       end
    end
 elseif platform.is_mac then
-   options.default_prog = { '/opt/homebrew/bin/fish', '-l' }
+   local function find_executable(candidates)
+      for _, path in ipairs(candidates) do
+         local f = io.open(path, 'r')
+         if f then
+            f:close()
+            return path
+         end
+      end
+   end
+
+   local zsh = find_executable({ '/bin/zsh', '/usr/bin/zsh', '/usr/local/bin/zsh', '/opt/homebrew/bin/zsh' })
+   options.default_prog = zsh and { zsh, '-l' } or { 'bash', '-l' }
    options.launch_menu = {
       { label = 'Bash', args = { 'bash', '-l' } },
       { label = 'Fish', args = { '/opt/homebrew/bin/fish', '-l' } },

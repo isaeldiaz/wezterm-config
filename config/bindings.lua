@@ -224,6 +224,22 @@ local mouse_bindings = {
    },
 }
 
+-- On macOS, scroll events are forwarded as arrow keys when an application has
+-- enabled mouse reporting (e.g. shell plugins, tmux). Explicitly bind the wheel
+-- to scroll the viewport instead.
+if platform.is_mac then
+   table.insert(mouse_bindings, {
+      event = { Down = { streak = 1, button = { WheelUp = 1 } } },
+      mods = 'NONE',
+      action = act.ScrollByCurrentEventWheelDelta,
+   })
+   table.insert(mouse_bindings, {
+      event = { Down = { streak = 1, button = { WheelDown = 1 } } },
+      mods = 'NONE',
+      action = act.ScrollByCurrentEventWheelDelta,
+   })
+end
+
 return {
    disable_default_key_bindings = true,
    disable_default_mouse_bindings = false,

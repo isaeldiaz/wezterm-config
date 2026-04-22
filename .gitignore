@@ -4,4 +4,5 @@
 /.luarocks
 .DS_Store
 /config/domains_local.lua
+/events/tab-title-domains.lua
 /backdrops
