@@ -90,7 +90,14 @@ local keys = {
    },
 
    -- panes: zoom pane (mirrors tmux zoom)
-   { key = 'z',     mods = 'LEADER',     action = act.TogglePaneZoomState },
+   {
+      key = 'z',
+      mods = 'LEADER',
+      action = wezterm.action_callback(function(window, pane)
+         window:perform_action(act.TogglePaneZoomState, pane)
+         wezterm.emit('zoom.toggled', window, pane)
+      end),
+   },
 
    -- panes: resize (mirrors tmux resize) - activates key table
    {
