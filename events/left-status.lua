@@ -20,8 +20,6 @@ local colors = {
    zoom_sc = { bg = 'rgba(0, 0, 0, 0.4)', fg = '#a6e3a1' },
 }
 
-local zoom_panes = {}
-
 local cells = Cells:new()
 local zoom_cells = Cells:new()
 
@@ -36,12 +34,19 @@ zoom_cells
    :add_segment(2, ' ' .. GLYPH_ZOOM .. ' ZOOM ', colors.zoom, attr(attr.intensity('Bold')))
    :add_segment(3, GLYPH_SEMI_CIRCLE_RIGHT, colors.zoom_sc, attr(attr.intensity('Bold')))
 
-M.setup = function()
-   wezterm.on('zoom.toggled', function(_window, pane)
-      local id = pane:pane_id()
-      zoom_panes[id] = not zoom_panes[id] or nil
-   end)
+local function is_pane_zoomed(window, pane)
+   local tab = window:mux_window():active_tab()
+   if not tab then return false end
+   local pane_id = pane:pane_id()
+   for _, info in ipairs(tab:panes_with_info()) do
+      if info.pane:pane_id() == pane_id then
+         return info.is_zoomed
+      end
+   end
+   return false
+end
 
+M.setup = function()
    wezterm.on('update-right-status', function(window, pane)
       local name = window:active_key_table()
       local res = {}
@@ -58,7 +63,7 @@ M.setup = function()
          res = cells:render_all()
       end
 
-      if zoom_panes[pane:pane_id()] then
+      if is_pane_zoomed(window, pane) then
          if #res > 0 then
             table.insert(res, { Text = ' ' })
          end
