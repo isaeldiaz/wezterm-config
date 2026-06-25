@@ -73,6 +73,9 @@ local keys = {
    { key = 'n',          mods = 'LEADER',     action = act.SpawnTab('DefaultDomain') },
    { key = 'w',          mods = 'LEADER',     action = act.CloseCurrentTab({ confirm = false }) },
 
+   -- panes: close (mirrors tmux kill-pane)
+   { key = 'x',          mods = 'LEADER',     action = act.CloseCurrentPane({ confirm = false }) },
+
    -- tabs: navigation (mirrors tmux window navigation)
    { key = 'Space',      mods = 'LEADER',     action = act.ActivateTabRelative(1) },
    { key = 'Space',      mods = 'LEADER|SHIFT', action = act.ActivateTabRelative(-1) },

@@ -55,6 +55,19 @@
 
       </details>
 
+- **Custom Status Bar**
+
+  - Left status shows the active <kbd>LEADER</kbd> indicator, the current key-table
+    name (e.g. `RESIZE_PANE`), and a `ZOOM` badge when the active pane is zoomed.
+  - Right status shows the date/time and battery level.
+
+- **tmux-style Leader Bindings**
+
+  A <kbd>LEADER</kbd>-based keymap (<kbd>SUPER</kbd>+<kbd>s</kbd>) for tabs, splits,
+  pane zoom/close and resize modes that mirrors a typical tmux setup.
+
+  > See: [key bindings](#all-key-bindings) for usage
+
 ---
 
 ### Getting Started
@@ -206,40 +219,48 @@
 
 - ##### Things You Might Want to Change:
 
-  - [./config/domains.lua](./config/domains.lua) for custom SSH/WSL domains
-  - [./config/launch.lua](./config/launch.lua) for preferred shells and its paths
+  - [./config/domains.lua](./config/domains.lua) for custom SSH/WSL domains. On
+    Windows these are loaded from `./config/domains_local.lua` (git-ignored), so
+    create that file to add your own SSH/WSL/Unix domains without committing them.
+  - [./config/launch.lua](./config/launch.lua) for preferred shells and their paths
+  - [./config/fonts.lua](./config/fonts.lua) for the font family and size
+    <sub>(default: JetBrainsMono Nerd Font)</sub>
 
 ---
 
 ### All Key Bindings
 
-Most of the key bindings revolve around a <kbd>SUPER</kbd> and <kbd>SUPER_REV</kbd>(super reversed) keys.<br>
+This config is built around a tmux-style <kbd>LEADER</kbd> key plus a small set of
+direct <kbd>SUPER</kbd> shortcuts. Default key bindings are disabled
+(`disable_default_key_bindings = true`), so only the bindings listed below are active.
 
-- On MacOs:
-  - <kbd>SUPER</kbd> ⇨ <kbd>Super</kbd>
-  - <kbd>SUPER_REV</kbd> ⇨ <kbd>Super</kbd>+<kbd>Ctrl</kbd>
-- On Windows and Linux
-  - <kbd>SUPER</kbd> ⇨ <kbd>Alt</kbd>
-  - <kbd>SUPER_REV</kbd> ⇨ <kbd>Alt</kbd>+<kbd>Ctrl</kbd>
+The <kbd>SUPER</kbd> modifier maps to a physical key per OS:
 
-> To avoid confusion when switching between different OS and to avoid conflicting<br>
-> with OS's built-in keyboard shortcuts.
+- On MacOS: <kbd>SUPER</kbd> ⇨ <kbd>Cmd</kbd>
+- On Windows and Linux: <kbd>SUPER</kbd> ⇨ <kbd>Alt</kbd>
 
-- On all platforms: <kbd>LEADER</kbd> ⇨ <kbd>SUPER_REV</kbd>+<kbd>Space</kbd>
+> Named this way to avoid confusion when switching between OSes and to avoid<br>
+> conflicting with the OS's built-in keyboard shortcuts. <sub>(A `SUPER_REV` =
+> <kbd>SUPER</kbd>+<kbd>Ctrl</kbd> modifier is also defined in `bindings.lua` but
+> currently unused.)</sub>
+
+- <kbd>LEADER</kbd> ⇨ <kbd>SUPER</kbd>+<kbd>s</kbd> (i.e. <kbd>Cmd</kbd>+<kbd>s</kbd> on
+  MacOS, <kbd>Alt</kbd>+<kbd>s</kbd> on Windows/Linux). After pressing the leader you
+  have ~1s to press the next key. These bindings mirror a typical tmux setup.
 
 #### Miscellaneous/Useful
 
-| Keys                              | Action                                      |
-| --------------------------------- | ------------------------------------------- |
-| <kbd>F1</kbd>                     | `ActivateCopyMode`                          |
-| <kbd>F2</kbd>                     | `ActivateCommandPalette`                    |
-| <kbd>F3</kbd>                     | `ShowLauncher`                              |
-| <kbd>F4</kbd>                     | `ShowLauncher` <sub>(tabs only)</sub>       |
-| <kbd>F5</kbd>                     | `ShowLauncher` <sub>(workspaces only)</sub> |
-| <kbd>F11</kbd>                    | `ToggleFullScreen`                          |
-| <kbd>F12</kbd>                    | `ShowDebugOverlay`                          |
-| <kbd>SUPER</kbd>+<kbd>f</kbd>     | Search Text                                 |
-| <kbd>SUPER_REV</kbd>+<kbd>u</kbd> | Open URL                                    |
+| Keys                          | Action                                            |
+| ----------------------------- | ------------------------------------------------- |
+| <kbd>F1</kbd>                 | `ActivateCopyMode`                                |
+| <kbd>F2</kbd>                 | `ActivateCommandPalette`                          |
+| <kbd>F3</kbd>                 | `ShowLauncher`                                    |
+| <kbd>F4</kbd>                 | `ShowLauncher` <sub>(fuzzy, tabs only)</sub>      |
+| <kbd>F5</kbd>                 | `ShowLauncher` <sub>(fuzzy, workspaces only)</sub>|
+| <kbd>F11</kbd>                | `ToggleFullScreen`                                |
+| <kbd>F12</kbd>                | `ShowDebugOverlay`                                |
+| <kbd>SUPER</kbd>+<kbd>f</kbd> | Search Text <sub>(case-insensitive)</sub>         |
+| <kbd>SUPER</kbd>+<kbd>u</kbd> | Open URL <sub>(quick-select)</sub>                |
 
 &nbsp;
 
@@ -264,94 +285,62 @@ Most of the key bindings revolve around a <kbd>SUPER</kbd> and <kbd>SUPER_REV</k
 
 #### Tabs
 
-##### Tabs: Spawn+Close
-
-| Keys                              | Action                                |
-| --------------------------------- | ------------------------------------- |
-| <kbd>SUPER</kbd>+<kbd>t</kbd>     | `SpawnTab` <sub>(DefaultDomain)</sub> |
-| <kbd>SUPER_REV</kbd>+<kbd>f</kbd> | `SpawnTab` <sub>(WSL:Ubuntu)</sub>    |
-| <kbd>SUPER_REV</kbd>+<kbd>w</kbd> | `CloseCurrentTab`                     |
-
-##### Tabs: Navigation
-
-| Keys                              | Action         |
-| --------------------------------- | -------------- |
-| <kbd>SUPER</kbd>+<kbd>[</kbd>     | Next Tab       |
-| <kbd>SUPER</kbd>+<kbd>]</kbd>     | Previous Tab   |
-| <kbd>SUPER_REV</kbd>+<kbd>[</kbd> | Move Tab Left  |
-| <kbd>SUPER_REV</kbd>+<kbd>]</kbd> | Move Tab Right |
-
-##### Tabs: Toggle Tab-bar
-
-| Keys                          | Action         |
-| ----------------------------- | -------------- |
-| <kbd>SUPER</kbd>+<kbd>9</kbd> | Toggle tab bar |
-
-##### Tabs: Title
-
-| Keys                              | Action             |
-| --------------------------------- | ------------------ |
-| <kbd>SUPER</kbd>+<kbd>0</kbd>     | Rename Current Tab |
-| <kbd>SUPER_REV</kbd>+<kbd>0</kbd> | Undo Rename        |
-
-&nbsp;
-
-#### Windows
-
-| Keys                          | Action               |
-| ----------------------------- | -------------------- |
-| <kbd>SUPER</kbd>+<kbd>n</kbd> | `SpawnWindow`        |
-| <kbd>SUPER</kbd>+<kbd>=</kbd> | Increase Window Size |
-| <kbd>SUPER</kbd>+<kbd>-</kbd> | Decrease Window Size |
+| Keys                                       | Action                                |
+| ------------------------------------------ | ------------------------------------- |
+| <kbd>LEADER</kbd> <kbd>n</kbd>             | `SpawnTab` <sub>(DefaultDomain)</sub> |
+| <kbd>LEADER</kbd> <kbd>w</kbd>             | `CloseCurrentTab` <sub>(no confirm)</sub> |
+| <kbd>LEADER</kbd> <kbd>Space</kbd>         | Next Tab                              |
+| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>Space</kbd> | Previous Tab                 |
 
 &nbsp;
 
 #### Panes
 
-##### Panes: Split Panes
+##### Panes: Split + Close
 
-| Keys                               | Action                                           |
-| ---------------------------------- | ------------------------------------------------ |
-| <kbd>SUPER</kbd>+<kbd>\\</kbd>     | `SplitVertical` <sub>(CurrentPaneDomain)</sub>   |
-| <kbd>SUPER_REV</kbd>+<kbd>\\</kbd> | `SplitHorizontal` <sub>(CurrentPaneDomain)</sub> |
+| Keys                            | Action                                           |
+| ------------------------------- | ------------------------------------------------ |
+| <kbd>LEADER</kbd> <kbd>\\</kbd> | `SplitHorizontal` <sub>(CurrentPaneDomain)</sub> |
+| <kbd>LEADER</kbd> <kbd>-</kbd>  | `SplitVertical` <sub>(CurrentPaneDomain)</sub>   |
+| <kbd>LEADER</kbd> <kbd>x</kbd>  | `CloseCurrentPane` <sub>(no confirm)</sub>       |
 
-##### Panes: Zoom+Close Pane
+##### Panes: Zoom
 
-| Keys                              | Action                |
-| --------------------------------- | --------------------- |
-| <kbd>SUPER</kbd>+<kbd>Enter</kbd> | `TogglePaneZoomState` |
-| <kbd>SUPER</kbd>+<kbd>w</kbd>     | `CloseCurrentPane`    |
+| Keys                           | Action                |
+| ------------------------------ | --------------------- |
+| <kbd>LEADER</kbd> <kbd>z</kbd> | `TogglePaneZoomState` |
 
-##### Panes: Navigation
+##### Panes: Resize
 
-| Keys                              | Action                  |
-| --------------------------------- | ----------------------- |
-| <kbd>SUPER_REV</kbd>+<kbd>k</kbd> | Move to Pane (Up)       |
-| <kbd>SUPER_REV</kbd>+<kbd>j</kbd> | Move to Pane (Down)     |
-| <kbd>SUPER_REV</kbd>+<kbd>h</kbd> | Move to Pane (Left)     |
-| <kbd>SUPER_REV</kbd>+<kbd>l</kbd> | Move to Pane (Right)    |
-| <kbd>SUPER_REV</kbd>+<kbd>p</kbd> | Swap with selected Pane |
+Pressing any of the keys below enters the `resize_pane` key table (see
+[Key Tables](#key-tables)); <kbd>h</kbd>/<kbd>j</kbd>/<kbd>k</kbd>/<kbd>l</kbd> then
+resize repeatedly until you press <kbd>q</kbd> or <kbd>Esc</kbd>.
 
-##### Panes: Scroll Pane
-
-| Keys                          | Action                               |
-| ----------------------------- | ------------------------------------ |
-| <kbd>SUPER</kbd>+<kbd>u</kbd> | Scroll Lines up <sub>5 lines</sub>   |
-| <kbd>SUPER</kbd>+<kbd>d</kbd> | Scroll Lines down <sub>5 lines</sub> |
-| <kbd>PageUp</kbd>             | Scroll Page up                       |
-| <kbd>PageDown</kbd>           | Scroll Page down                     |
+| Keys                                              | Action                       |
+| ------------------------------------------------- | ---------------------------- |
+| <kbd>LEADER</kbd> <kbd>h</kbd>/<kbd>j</kbd>/<kbd>k</kbd>/<kbd>l</kbd> | Enter `resize_pane` table |
 
 &nbsp;
 
 #### Background Images
 
-| Keys                              | Action                       |
-| --------------------------------- | ---------------------------- |
-| <kbd>SUPER</kbd>+<kbd>/</kbd>     | Select Random Image          |
-| <kbd>SUPER</kbd>+<kbd>,</kbd>     | Cycle to next Image          |
-| <kbd>SUPER</kbd>+<kbd>.</kbd>     | Cycle to previous Image      |
-| <kbd>SUPER_REV</kbd>+<kbd>/</kbd> | Fuzzy select Image           |
-| <kbd>SUPER</kbd>+<kbd>b</kbd>     | Toggle background focus mode |
+| Keys                                       | Action                       |
+| ------------------------------------------ | ---------------------------- |
+| <kbd>SUPER</kbd>+<kbd>b</kbd>             | Toggle background focus mode |
+| <kbd>LEADER</kbd> <kbd>/</kbd>             | Select Random Image          |
+| <kbd>LEADER</kbd> <kbd>,</kbd>             | Cycle to previous Image      |
+| <kbd>LEADER</kbd> <kbd>.</kbd>             | Cycle to next Image          |
+| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>/</kbd> | Fuzzy select Image      |
+
+&nbsp;
+
+#### Misc (Leader)
+
+| Keys                           | Action                                       |
+| ------------------------------ | -------------------------------------------- |
+| <kbd>LEADER</kbd> <kbd>r</kbd> | `ReloadConfiguration`                        |
+| <kbd>LEADER</kbd> <kbd>m</kbd> | Toggle mouse mode <sub>(enable/disable)</sub> |
+| <kbd>LEADER</kbd> <kbd>f</kbd> | Enter `resize_font` key table                |
 
 &nbsp;
 
@@ -359,10 +348,10 @@ Most of the key bindings revolve around a <kbd>SUPER</kbd> and <kbd>SUPER_REV</k
 
 > See: <https://wezfurlong.org/wezterm/config/key-tables.html>
 
-| Keys                           | Action        |
-| ------------------------------ | ------------- |
-| <kbd>LEADER</kbd>+<kbd>f</kbd> | `resize_font` |
-| <kbd>LEADER</kbd>+<kbd>p</kbd> | `resize_pane` |
+| Keys                           | Action                          | Timeout |
+| ------------------------------ | ------------------------------- | ------- |
+| <kbd>LEADER</kbd> <kbd>f</kbd> | enter `resize_font`             | 8s      |
+| <kbd>LEADER</kbd> <kbd>h</kbd>/<kbd>j</kbd>/<kbd>k</kbd>/<kbd>l</kbd> | enter `resize_pane` | 1s |
 
 ##### Key Table: `resize_font`
 
@@ -384,6 +373,20 @@ Most of the key bindings revolve around a <kbd>SUPER</kbd> and <kbd>SUPER_REV</k
 | <kbd>l</kbd>   | `AdjustPaneSize` <sub>(Direction: Right)</sub> |
 | <kbd>q</kbd>   | `PopKeyTable` <sub>(exit)</sub>                |
 | <kbd>Esc</kbd> | `PopKeyTable` <sub>(exit)</sub>                |
+
+&nbsp;
+
+#### Mouse
+
+Default mouse bindings are kept enabled; the following are customized:
+
+| Event                                         | Action                                          |
+| --------------------------------------------- | ----------------------------------------------- |
+| Left-click release                            | Copy selection to Clipboard + Primary Selection |
+| <kbd>Ctrl</kbd>+Left-click                    | Open link under cursor                          |
+| Mouse wheel <sub>(MacOS only)</sub>           | Scroll viewport                                 |
+
+> Mouse mode can be toggled off/on at runtime with <kbd>LEADER</kbd> <kbd>m</kbd>.
 
 ---
 
