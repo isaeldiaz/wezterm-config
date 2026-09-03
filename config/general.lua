@@ -2,6 +2,12 @@ return {
    -- behaviours
    automatically_reload_config = true,
 
+   -- Plain mouse events go to the innermost app that asked for them (tmux, nvim);
+   -- holding SHIFT bypasses mouse reporting and hands the event to WezTerm's own
+   -- selection instead. One rule that holds at every nesting depth, because the
+   -- bypass is evaluated by the local GUI before the event reaches the mux.
+   bypass_mouse_reporting_modifiers = 'SHIFT',
+
    -- treat these characters as word boundaries for double-click selection
    selection_word_boundary = ' \t\n{}[]()"\';,|`:`',
    exit_behavior = 'CloseOnCleanExit', -- if the shell program exited with a successful status

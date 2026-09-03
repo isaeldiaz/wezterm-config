@@ -76,6 +76,21 @@ local keys = {
    -- panes: close (mirrors tmux kill-pane)
    { key = 'x',          mods = 'LEADER',     action = act.CloseCurrentPane({ confirm = false }) },
 
+   -- panes: navigate + resize (WezTerm layer)
+   --
+   -- ALT owns the outer layer, CTRL/prefix owns the inner ones: C-hjkl is
+   -- vim-tmux-navigator inside tmux/nvim, prefix+hjkl resizes tmux panes, and
+   -- C-arrows resizes nvim splits. WezTerm consumes these ALT chords before
+   -- they reach the wire, so the layers can never fight over a key.
+   { key = 'h',          mods = mod.SUPER,     action = act.ActivatePaneDirection('Left') },
+   { key = 'j',          mods = mod.SUPER,     action = act.ActivatePaneDirection('Down') },
+   { key = 'k',          mods = mod.SUPER,     action = act.ActivatePaneDirection('Up') },
+   { key = 'l',          mods = mod.SUPER,     action = act.ActivatePaneDirection('Right') },
+   { key = 'h',          mods = mod.SUPER_REV, action = act.AdjustPaneSize({ 'Left', 2 }) },
+   { key = 'j',          mods = mod.SUPER_REV, action = act.AdjustPaneSize({ 'Down', 2 }) },
+   { key = 'k',          mods = mod.SUPER_REV, action = act.AdjustPaneSize({ 'Up', 2 }) },
+   { key = 'l',          mods = mod.SUPER_REV, action = act.AdjustPaneSize({ 'Right', 2 }) },
+
    -- tabs: navigation (mirrors tmux window navigation)
    { key = 'Space',      mods = 'LEADER',     action = act.ActivateTabRelative(1) },
    { key = 'Space',      mods = 'LEADER|SHIFT', action = act.ActivateTabRelative(-1) },
@@ -139,9 +154,6 @@ local keys = {
 
    -- reload config (mirrors tmux reload)
    { key = 'r',          mods = 'LEADER',     action = act.ReloadConfiguration },
-
-   -- mouse toggle (WezTerm-specific)
-   { key = 'm',          mods = 'LEADER',     action = act.EmitEvent('toggle-mouse-mode') },
 
    -- font resize mode (WezTerm-specific)
    {
