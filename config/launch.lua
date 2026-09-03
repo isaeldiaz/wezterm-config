@@ -3,6 +3,17 @@ local platform = require('utils.platform')
 
 local nf = wezterm.nerdfonts
 
+---Return the first path in `candidates` that exists, or nil.
+local function find_executable(candidates)
+   for _, path in ipairs(candidates) do
+      local f = io.open(path, 'r')
+      if f then
+         f:close()
+         return path
+      end
+   end
+end
+
 local options = {
    default_prog = {},
    launch_menu = {},
@@ -18,7 +29,14 @@ if platform.is_win then
       { label = 'Msys2', args = { 'ucrt64.cmd' } },
       {
          label = 'Git Bash',
-         args = { 'C:\\Users\\kevin\\scoop\\apps\\git\\current\\bin\\bash.exe' },
+         args = {
+            find_executable({
+               (os.getenv('USERPROFILE') or '')
+                  .. '\\scoop\\apps\\git\\current\\bin\\bash.exe',
+               'C:\\Program Files\\Git\\bin\\bash.exe',
+               'C:\\Program Files (x86)\\Git\\bin\\bash.exe',
+            }) or 'bash.exe',
+         },
       },
    }
 
@@ -45,16 +63,6 @@ if platform.is_win then
       end
    end
 elseif platform.is_mac then
-   local function find_executable(candidates)
-      for _, path in ipairs(candidates) do
-         local f = io.open(path, 'r')
-         if f then
-            f:close()
-            return path
-         end
-      end
-   end
-
    local zsh = find_executable({ '/bin/zsh', '/usr/bin/zsh', '/usr/local/bin/zsh', '/opt/homebrew/bin/zsh' })
    options.default_prog = zsh and { zsh, '-l' } or { 'bash', '-l' }
    options.launch_menu = {
