@@ -1,9 +1,10 @@
 local wezterm = require('wezterm')
 local umath = require('utils.math')
 local Cells = require('utils.cells')
+local KeyboardLayout = require('utils.keyboard-layout')
 local OptsValidator = require('utils.opts-validator')
 
----@alias Event.RightStatusOptions { date_format?: string }
+---@alias Event.RightStatusOptions { date_format?: string, keyboard_layout?: boolean, keyboard_layout_format?: KeyboardLayout.Format }
 
 ---Setup options for the right status bar
 local EVENT_OPTS = {}
@@ -15,6 +16,17 @@ EVENT_OPTS.schema = {
       type = 'string',
       default = '%a %H:%M:%S',
    },
+   {
+      name = 'keyboard_layout',
+      type = 'boolean',
+      default = true,
+   },
+   {
+      name = 'keyboard_layout_format',
+      type = 'string',
+      default = 'short',
+      enum = { 'short', 'full', 'layout' },
+   },
 }
 EVENT_OPTS.validator = OptsValidator:new(EVENT_OPTS.schema)
 
@@ -25,6 +37,7 @@ local M = {}
 
 local ICON_SEPARATOR = nf.oct_dash
 local ICON_DATE = nf.fa_calendar
+local ICON_KEYBOARD = nf.md_keyboard
 
 ---@type string[]
 local discharging_icons = {
@@ -58,6 +71,7 @@ local charging_icons = {
 local colors = {
    date      = { fg = '#fab387', bg = 'rgba(0, 0, 0, 0.4)' },
    battery   = { fg = '#f9e2af', bg = 'rgba(0, 0, 0, 0.4)' },
+   keyboard  = { fg = '#a6e3a1', bg = 'rgba(0, 0, 0, 0.4)' },
    separator = { fg = '#74c7ec', bg = 'rgba(0, 0, 0, 0.4)' }
 }
 
@@ -69,6 +83,8 @@ cells
    :add_segment('separator', ' ' .. ICON_SEPARATOR .. '  ', colors.separator)
    :add_segment('battery_icon', '', colors.battery)
    :add_segment('battery_text', '', colors.battery, attr(attr.intensity('Bold')))
+   :add_segment('keyboard_icon', ICON_KEYBOARD .. '  ', colors.keyboard)
+   :add_segment('keyboard_text', '', colors.keyboard, attr(attr.intensity('Bold')))
 
 ---@return string, string
 local function battery_info()
@@ -99,6 +115,10 @@ M.setup = function(opts)
       wezterm.log_error(err)
    end
 
+   if valid_opts.keyboard_layout then
+      KeyboardLayout.setup()
+   end
+
    wezterm.on('update-right-status', function(window, _pane)
       local battery_text, battery_icon = battery_info()
 
@@ -107,11 +127,18 @@ M.setup = function(opts)
          :update_segment_text('battery_icon', battery_icon)
          :update_segment_text('battery_text', battery_text)
 
-      window:set_right_status(
-         wezterm.format(
-            cells:render({ 'date_icon', 'date_text', 'separator', 'battery_icon', 'battery_text' })
-         )
-      )
+      local ids = { 'date_icon', 'date_text', 'separator', 'battery_icon', 'battery_text' }
+
+      local layout = valid_opts.keyboard_layout
+         and KeyboardLayout.get(valid_opts.keyboard_layout_format)
+      if layout then
+         cells:update_segment_text('keyboard_text', layout)
+         table.insert(ids, 'separator')
+         table.insert(ids, 'keyboard_icon')
+         table.insert(ids, 'keyboard_text')
+      end
+
+      window:set_right_status(wezterm.format(cells:render(ids)))
    end)
 end
 

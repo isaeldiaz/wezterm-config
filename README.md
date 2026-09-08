@@ -59,7 +59,8 @@
 
   - Left status shows the active <kbd>LEADER</kbd> indicator, the current key-table
     name (e.g. `RESIZE_PANE`), and a `ZOOM` badge when the active pane is zoomed.
-  - Right status shows the date/time and battery level.
+  - Right status shows the date/time, battery level and the active keyboard layout
+    (Windows only, e.g. `US`/`NO`).
 
 - **tmux-style Leader Bindings**
 
