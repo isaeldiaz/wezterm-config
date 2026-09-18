@@ -311,6 +311,21 @@ The <kbd>SUPER</kbd> modifier maps to a physical key per OS:
 | ------------------------------ | --------------------- |
 | <kbd>LEADER</kbd> <kbd>z</kbd> | `TogglePaneZoomState` |
 
+##### Panes: Rearrange
+
+| Keys                                            | Action                                                 |
+| ----------------------------------------------- | ------------------------------------------------------ |
+| <kbd>LEADER</kbd> <kbd>o</kbd>                  | `RotatePanes` <sub>(Clockwise)</sub>                   |
+| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>o</kbd> | `RotatePanes` <sub>(CounterClockwise)</sub>            |
+| <kbd>LEADER</kbd> <kbd>s</kbd>                  | `PaneSelect` <sub>(swap picked pane with active)</sub> |
+
+> [!WARNING]
+> These only work in tabs whose panes are local to the GUI. In a tab served by a
+> mux domain they appear to resize panes without swapping their content, because
+> both actions edit the client's copy of the split tree and the server's next
+> sync reverts it. Upstream: [wezterm#6397](https://github.com/wez/wezterm/issues/6397),
+> [wezterm#5520](https://github.com/wezterm/wezterm/issues/5520).
+
 ##### Panes: Resize
 
 Pressing any of the keys below enters the `resize_pane` key table (see

@@ -114,6 +114,17 @@ local keys = {
       action = act.TogglePaneZoomState,
    },
 
+   -- panes: rearrange (mirrors tmux rotate-window / swap-pane)
+   --
+   -- NOTE: these only work in tabs whose panes are local to the GUI. Both
+   -- actions edit the GUI client's *copy* of the split tree, so in a tab served
+   -- by a mux domain (see config/domains_local.lua) the server's next layout
+   -- sync reverts the content while the locally-applied sizes stick -- panes
+   -- appear to change size without swapping. Upstream: wezterm#6397, #5520.
+   { key = 'o',          mods = 'LEADER',       action = act.RotatePanes('Clockwise') },
+   { key = 'o',          mods = 'LEADER|SHIFT', action = act.RotatePanes('CounterClockwise') },
+   { key = 's',          mods = 'LEADER',       action = act.PaneSelect({ mode = 'SwapWithActive' }) },
+
    -- panes: resize (mirrors tmux resize) - activates key table
    {
       key = 'h',
