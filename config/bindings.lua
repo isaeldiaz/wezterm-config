@@ -1,6 +1,7 @@
 local wezterm = require('wezterm')
 local platform = require('utils.platform')
 local backdrops = require('utils.backdrops')
+local domain_picker = require('utils.domain-picker')
 local act = wezterm.action
 
 local mod = {}
@@ -70,8 +71,21 @@ local keys = {
    -- These mirror tmux bindings (Ctrl-s)
    
    -- tabs: spawn+close (mirrors tmux windows)
-   { key = 'n',          mods = 'LEADER',     action = act.SpawnTab('DefaultDomain') },
+   --
+   -- CurrentPaneDomain, not DefaultDomain: in a window whose panes live on a mux
+   -- domain (config/domains_local.lua) spawning into the default domain mixes a
+   -- local shell into a remote-backed window and drags the domain through an
+   -- attach/resync on the way.
+   { key = 'n',          mods = 'LEADER',     action = act.SpawnTab('CurrentPaneDomain') },
    { key = 'w',          mods = 'LEADER',     action = act.CloseCurrentTab({ confirm = false }) },
+
+   -- windows: spawn + break a pane out (mirrors tmux new-session / break-pane)
+   --
+   -- There is no MoveTabToNewWindow in 20240203; PaneSelect is the equivalent and
+   -- is finer-grained anyway -- pick the pane, it leaves with its own window/tab.
+   { key = 'c',          mods = 'LEADER',       action = act.SpawnWindow },
+   { key = '1',          mods = 'LEADER|SHIFT', action = act.PaneSelect({ mode = 'MoveToNewWindow' }) },
+   { key = '2',          mods = 'LEADER|SHIFT', action = act.PaneSelect({ mode = 'MoveToNewTab' }) },
 
    -- panes: close (mirrors tmux kill-pane)
    { key = 'x',          mods = 'LEADER',     action = act.CloseCurrentPane({ confirm = false }) },
@@ -94,6 +108,10 @@ local keys = {
    -- tabs: navigation (mirrors tmux window navigation)
    { key = 'Space',      mods = 'LEADER',     action = act.ActivateTabRelative(1) },
    { key = 'Space',      mods = 'LEADER|SHIFT', action = act.ActivateTabRelative(-1) },
+
+   -- tabs: reorder (mirrors tmux swap-window)
+   { key = ',',          mods = 'LEADER|SHIFT', action = act.MoveTabRelative(-1) },
+   { key = '.',          mods = 'LEADER|SHIFT', action = act.MoveTabRelative(1) },
 
    -- panes: split panes (mirrors tmux splits)
    {
@@ -163,6 +181,43 @@ local keys = {
       }),
    },
 
+   -- workspaces (mirrors tmux sessions; F5 lists the existing ones)
+   {
+      key = 'w',
+      mods = 'LEADER|SHIFT',
+      action = act.PromptInputLine({
+         description = wezterm.format({
+            { Attribute = { Intensity = 'Bold' } },
+            { Foreground = { Color = '#FAB387' } },
+            { Text = 'Switch to (or create) workspace:' },
+         }),
+         action = wezterm.action_callback(function(window, pane, line)
+            if line and line ~= '' then
+               window:perform_action(act.SwitchToWorkspace({ name = line }), pane)
+            end
+         end),
+      }),
+   },
+   {
+      key = 'r',
+      mods = 'LEADER|SHIFT',
+      action = act.PromptInputLine({
+         description = wezterm.format({
+            { Attribute = { Intensity = 'Bold' } },
+            { Foreground = { Color = '#FAB387' } },
+            { Text = 'Rename workspace to:' },
+         }),
+         action = wezterm.action_callback(function(window, _pane, line)
+            if line and line ~= '' then
+               wezterm.mux.rename_workspace(window:active_workspace(), line)
+            end
+         end),
+      }),
+   },
+
+   -- domains: attach/detach whichever one you pick (see utils/domain-picker.lua)
+   { key = 'a',          mods = 'LEADER',     action = domain_picker.toggle },
+
    -- reload config (mirrors tmux reload)
    { key = 'r',          mods = 'LEADER',     action = act.ReloadConfiguration },
 
@@ -217,6 +272,13 @@ local keys = {
       }),
    },
 }
+
+-- tabs: jump straight to one by index (mirrors tmux prefix+<n>). Generated rather
+-- than spelled out; LEADER-0 goes to the last tab regardless of how many there are.
+for i = 1, 9 do
+   table.insert(keys, { key = tostring(i), mods = 'LEADER', action = act.ActivateTab(i - 1) })
+end
+table.insert(keys, { key = '0', mods = 'LEADER', action = act.ActivateTab(-1) })
 
 -- stylua: ignore
 local key_tables = {

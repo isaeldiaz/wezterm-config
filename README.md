@@ -57,15 +57,28 @@
 
 - **Custom Status Bar**
 
-  - Left status shows the active <kbd>LEADER</kbd> indicator, the current key-table
-    name (e.g. `RESIZE_PANE`), and a `ZOOM` badge when the active pane is zoomed.
+  - Left status shows the active workspace and mux window id, the active
+    <kbd>LEADER</kbd> indicator, the current key-table name (e.g. `RESIZE_PANE`),
+    and a `ZOOM` badge when the active pane is zoomed.
   - Right status shows the date/time, battery level and the active keyboard layout
     (Windows only, e.g. `US`/`NO`).
 
+- [**Domain Selector**](utils/domain-picker.lua)
+
+  A fuzzy picker that attaches or detaches any configured domain, showing which are
+  currently attached.
+
+  Attaching a WezTerm-multiplexing domain imports every window and tab the remote mux
+  holds. Doing it deliberately keeps that off the normal tab-spawn path, where it
+  surfaces as tabs from one window appearing in another.
+
+  > See: [key bindings](#windows-workspaces--domains) for usage
+
 - **tmux-style Leader Bindings**
 
-  A <kbd>LEADER</kbd>-based keymap (<kbd>SUPER</kbd>+<kbd>s</kbd>) for tabs, splits,
-  pane zoom/close and resize modes that mirrors a typical tmux setup.
+  A <kbd>LEADER</kbd>-based keymap (<kbd>SUPER</kbd>+<kbd>s</kbd>) for tabs, windows,
+  workspaces, splits, pane zoom/close and resize modes that mirrors a typical tmux
+  setup.
 
   > See: [key bindings](#all-key-bindings) for usage
 
@@ -288,10 +301,36 @@ The <kbd>SUPER</kbd> modifier maps to a physical key per OS:
 
 | Keys                                       | Action                                |
 | ------------------------------------------ | ------------------------------------- |
-| <kbd>LEADER</kbd> <kbd>n</kbd>             | `SpawnTab` <sub>(DefaultDomain)</sub> |
+| <kbd>LEADER</kbd> <kbd>n</kbd>             | `SpawnTab` <sub>(CurrentPaneDomain)</sub> |
 | <kbd>LEADER</kbd> <kbd>w</kbd>             | `CloseCurrentTab` <sub>(no confirm)</sub> |
 | <kbd>LEADER</kbd> <kbd>Space</kbd>         | Next Tab                              |
 | <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>Space</kbd> | Previous Tab                 |
+| <kbd>LEADER</kbd> <kbd>1</kbd>…<kbd>9</kbd> | Activate Tab 1-9                     |
+| <kbd>LEADER</kbd> <kbd>0</kbd>             | Activate last Tab                     |
+| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>,</kbd> | Move Tab left                    |
+| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>.</kbd> | Move Tab right                   |
+
+<br>
+
+#### Windows, Workspaces + Domains
+
+Multi-window workflows live here. The left status bar shows the active workspace
+and the mux window id, so two windows side by side are always tellable apart.
+
+| Keys                                            | Action                                                     |
+| ----------------------------------------------- | ---------------------------------------------------------- |
+| <kbd>LEADER</kbd> <kbd>c</kbd>                  | `SpawnWindow`                                              |
+| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>1</kbd> | `PaneSelect` <sub>(move picked pane to a new window)</sub> |
+| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>2</kbd> | `PaneSelect` <sub>(move picked pane to a new tab)</sub>    |
+| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>w</kbd> | Switch to (or create) a Workspace by name                  |
+| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>r</kbd> | Rename the active Workspace                                |
+| <kbd>F5</kbd>                                   | Fuzzy-select an existing Workspace                         |
+| <kbd>LEADER</kbd> <kbd>a</kbd>                  | Fuzzy-select a Domain and attach/detach it                 |
+
+Attaching a WezTerm-multiplexing domain imports every window and tab the remote
+mux holds. Doing it explicitly with <kbd>LEADER</kbd> <kbd>a</kbd> keeps that off
+the normal tab-spawn path, where it shows up as tabs from one window appearing in
+another.
 
 &nbsp;
 
@@ -304,6 +343,17 @@ The <kbd>SUPER</kbd> modifier maps to a physical key per OS:
 | <kbd>LEADER</kbd> <kbd>\\</kbd> | `SplitHorizontal` <sub>(CurrentPaneDomain)</sub> |
 | <kbd>LEADER</kbd> <kbd>-</kbd>  | `SplitVertical` <sub>(CurrentPaneDomain)</sub>   |
 | <kbd>LEADER</kbd> <kbd>x</kbd>  | `CloseCurrentPane` <sub>(no confirm)</sub>       |
+
+##### Panes: Navigate + Resize Directly
+
+<kbd>SUPER</kbd> owns the outer layer so it never collides with the inner ones:
+<kbd>Ctrl</kbd>+<kbd>hjkl</kbd> stays free for vim-tmux-navigator inside tmux/nvim,
+and WezTerm consumes these chords before they reach the wire.
+
+| Keys                                                                              | Action                 |
+| --------------------------------------------------------------------------------- | ---------------------- |
+| <kbd>SUPER</kbd>+<kbd>h</kbd>/<kbd>j</kbd>/<kbd>k</kbd>/<kbd>l</kbd>              | `ActivatePaneDirection` |
+| <kbd>SUPER</kbd>+<kbd>Ctrl</kbd>+<kbd>h</kbd>/<kbd>j</kbd>/<kbd>k</kbd>/<kbd>l</kbd> | `AdjustPaneSize` <sub>(2 cells)</sub> |
 
 ##### Panes: Zoom
 
@@ -355,7 +405,6 @@ resize repeatedly until you press <kbd>q</kbd> or <kbd>Esc</kbd>.
 | Keys                           | Action                                       |
 | ------------------------------ | -------------------------------------------- |
 | <kbd>LEADER</kbd> <kbd>r</kbd> | `ReloadConfiguration`                        |
-| <kbd>LEADER</kbd> <kbd>m</kbd> | Toggle mouse mode <sub>(enable/disable)</sub> |
 | <kbd>LEADER</kbd> <kbd>f</kbd> | Enter `resize_font` key table                |
 
 &nbsp;
