@@ -15,9 +15,15 @@ if platform.is_win then
    -- Load local domain overrides (not tracked in git, see config/domains_local.lua)
    local ok, local_domains = pcall(require, 'config.domains_local')
    if ok then
-      if local_domains.ssh_domains then options.ssh_domains = local_domains.ssh_domains end
-      if local_domains.wsl_domains then options.wsl_domains = local_domains.wsl_domains end
-      if local_domains.unix_domains then options.unix_domains = local_domains.unix_domains end
+      if local_domains.ssh_domains then
+         options.ssh_domains = local_domains.ssh_domains
+      end
+      if local_domains.wsl_domains then
+         options.wsl_domains = local_domains.wsl_domains
+      end
+      if local_domains.unix_domains then
+         options.unix_domains = local_domains.unix_domains
+      end
    end
 end
 

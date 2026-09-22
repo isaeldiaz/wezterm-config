@@ -31,8 +31,7 @@ if platform.is_win then
          label = 'Git Bash',
          args = {
             find_executable({
-               (os.getenv('USERPROFILE') or '')
-                  .. '\\scoop\\apps\\git\\current\\bin\\bash.exe',
+               (os.getenv('USERPROFILE') or '') .. '\\scoop\\apps\\git\\current\\bin\\bash.exe',
                'C:\\Program Files\\Git\\bin\\bash.exe',
                'C:\\Program Files (x86)\\Git\\bin\\bash.exe',
             }) or 'bash.exe',
@@ -63,7 +62,8 @@ if platform.is_win then
       end
    end
 elseif platform.is_mac then
-   local zsh = find_executable({ '/bin/zsh', '/usr/bin/zsh', '/usr/local/bin/zsh', '/opt/homebrew/bin/zsh' })
+   local zsh =
+      find_executable({ '/bin/zsh', '/usr/bin/zsh', '/usr/local/bin/zsh', '/opt/homebrew/bin/zsh' })
    options.default_prog = zsh and { zsh, '-l' } or { 'bash', '-l' }
    options.launch_menu = {
       { label = 'Bash', args = { 'bash', '-l' } },

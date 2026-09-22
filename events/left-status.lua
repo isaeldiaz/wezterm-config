@@ -6,15 +6,18 @@ local attr = Cells.attr
 
 local M = {}
 
+-- stylua: ignore start
 local GLYPH_SEMI_CIRCLE_LEFT  = nf.ple_left_half_circle_thick  --[[ '' ]]
 local GLYPH_SEMI_CIRCLE_RIGHT = nf.ple_right_half_circle_thick --[[ '' ]]
 local GLYPH_KEY_TABLE         = nf.md_table_key                --[[ '󱏅' ]]
 local GLYPH_KEY               = nf.md_key                      --[[ '󰌆' ]]
 local GLYPH_ZOOM              = nf.md_arrow_expand_all or nf.fa_expand or '⊞'
-local GLYPH_WORKSPACE         = nf.md_view_dashboard             --[[ '󰕮' ]]
-local GLYPH_WINDOW            = nf.md_dock_window                --[[ '󰕰' ]]
+local GLYPH_WORKSPACE         = nf.md_view_dashboard           --[[ '󰕮' ]]
+local GLYPH_WINDOW            = nf.md_dock_window              --[[ '󰕰' ]]
+-- stylua: ignore end
 
 ---@type table<string, Cells.SegmentColors>
+-- stylua: ignore
 local colors = {
    default = { bg = '#fab387', fg = '#1c1b19' },
    scircle = { bg = 'rgba(0, 0, 0, 0.4)', fg = '#fab387' },
@@ -46,7 +49,9 @@ ws_cells
 
 local function is_pane_zoomed(window, pane)
    local tab = window:mux_window():active_tab()
-   if not tab then return false end
+   if not tab then
+      return false
+   end
    local pane_id = pane:pane_id()
    for _, info in ipairs(tab:panes_with_info()) do
       if info.pane:pane_id() == pane_id then

@@ -109,25 +109,38 @@ end
 
 -- Shell process names: when one of these is the foreground proc, show CWD instead
 local SHELL_NAMES = {
-   powershell = true, pwsh = true, bash = true,
-   nu = true, zsh = true, fish = true, cmd = true,
+   powershell = true,
+   pwsh = true,
+   bash = true,
+   nu = true,
+   zsh = true,
+   fish = true,
+   cmd = true,
 }
 
 local function get_domain_icon(domain)
-   if DOMAIN_ICONS[domain] then return DOMAIN_ICONS[domain] end
-   if domain:match('^WSL:') then return nf.dev_ubuntu end
+   if DOMAIN_ICONS[domain] then
+      return DOMAIN_ICONS[domain]
+   end
+   if domain:match('^WSL:') then
+      return nf.dev_ubuntu
+   end
    return nf.fa_microchip -- fallback for unknown SSH domains
 end
 
 local function shorten_cwd(path, max_len)
-   if not path or path == '' then return '' end
+   if not path or path == '' then
+      return ''
+   end
    path = path:gsub('\\', '/')
-   path = path:gsub('^/mnt/%a/[Uu]sers/[^/]+', '~')  -- WSL Windows mounts
-   path = path:gsub('^%a:[/\\][Uu]sers/[^/]+', '~')  -- Windows native paths
-   path = path:gsub('^/home/[^/]+', '~')              -- Linux/SSH home
+   path = path:gsub('^/mnt/%a/[Uu]sers/[^/]+', '~') -- WSL Windows mounts
+   path = path:gsub('^%a:[/\\][Uu]sers/[^/]+', '~') -- Windows native paths
+   path = path:gsub('^/home/[^/]+', '~') -- Linux/SSH home
    if #path > max_len then
       local parts = {}
-      for p in path:gmatch('[^/]+') do table.insert(parts, p) end
+      for p in path:gmatch('[^/]+') do
+         table.insert(parts, p)
+      end
       if #parts >= 2 then
          path = parts[#parts - 1] .. '/' .. parts[#parts]
       elseif #parts == 1 then
@@ -419,8 +432,8 @@ M.setup = function(opts)
          title = proc
       end
 
-      local bg   = tab.is_active and '#74c7ec' or (hover and '#5D87A3' or '#45475A')
-      local fg   = tab.is_active and '#11111B' or '#1C1B19'
+      local bg = tab.is_active and '#74c7ec' or (hover and '#5D87A3' or '#45475A')
+      local fg = tab.is_active and '#11111B' or '#1C1B19'
       local edge = 'rgba(0, 0, 0, 0.4)'
 
       -- For plain SSH domains (multiplexing='None'), foreground_process_name
@@ -432,14 +445,14 @@ M.setup = function(opts)
       else
          has_running_proc = not SHELL_NAMES[proc:lower()]
       end
-      local show_indicator   = not tab.is_active and has_running_proc
+      local show_indicator = not tab.is_active and has_running_proc
 
       local cells = {
          { Background = { Color = edge } },
-         { Foreground = { Color = bg   } },
+         { Foreground = { Color = bg } },
          { Text = GLYPH_SCIRCLE_LEFT },
-         { Background = { Color = bg   } },
-         { Foreground = { Color = fg   } },
+         { Background = { Color = bg } },
+         { Foreground = { Color = fg } },
          { Attribute = { Intensity = 'Bold' } },
          { Text = ' ' .. icon .. ' ' .. title },
       }
@@ -449,10 +462,10 @@ M.setup = function(opts)
          table.insert(cells, { Text = ' ' .. nf.md_circle_small })
       end
 
-      table.insert(cells, { Foreground = { Color = fg   } })
+      table.insert(cells, { Foreground = { Color = fg } })
       table.insert(cells, { Text = ' ' })
       table.insert(cells, { Background = { Color = edge } })
-      table.insert(cells, { Foreground = { Color = bg   } })
+      table.insert(cells, { Foreground = { Color = bg } })
       table.insert(cells, { Text = GLYPH_SCIRCLE_RIGHT })
 
       return cells
@@ -483,7 +496,6 @@ M.setup = function(opts)
 
       return title
    end)
-
 end
 
 return M
