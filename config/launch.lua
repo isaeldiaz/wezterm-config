@@ -21,12 +21,15 @@ local options = {
 
 if platform.is_win then
    options.default_prog = { 'powershell', '-NoLogo' }
+   -- Pin Windows shells to the local domain; otherwise they spawn in the
+   -- current pane's domain (e.g. a Linux mux server) and drop the connection.
+   local LOCAL = { DomainName = 'local' }
    options.launch_menu = {
-      { label = 'PowerShell Core', args = { 'powershell', '-NoLogo' } },
-      { label = 'PowerShell Desktop', args = { 'powershell' } },
-      { label = 'Command Prompt', args = { 'cmd' } },
-      { label = 'Nushell', args = { 'nu' } },
-      { label = 'Msys2', args = { 'ucrt64.cmd' } },
+      { label = 'PowerShell Core', args = { 'powershell', '-NoLogo' }, domain = LOCAL },
+      { label = 'PowerShell Desktop', args = { 'powershell' }, domain = LOCAL },
+      { label = 'Command Prompt', args = { 'cmd' }, domain = LOCAL },
+      { label = 'Nushell', args = { 'nu' }, domain = LOCAL },
+      { label = 'Msys2', args = { 'ucrt64.cmd' }, domain = LOCAL },
       {
          label = 'Git Bash',
          args = {
@@ -36,6 +39,7 @@ if platform.is_win then
                'C:\\Program Files (x86)\\Git\\bin\\bash.exe',
             }) or 'bash.exe',
          },
+         domain = LOCAL,
       },
    }
 
