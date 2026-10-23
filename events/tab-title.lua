@@ -5,6 +5,7 @@
 local wezterm = require('wezterm')
 local Cells = require('utils.cells')
 local OptsValidator = require('utils.opts-validator')
+local drawer = require('utils.drawer')
 
 ---
 -- =======================================
@@ -49,6 +50,7 @@ local GLYPH_LINUX = nf.cod_terminal_linux --[[  ]]
 local GLYPH_DEBUG = nf.fa_bug --[[  ]]
 -- local GLYPH_SEARCH = nf.fa_search --[[  ]]
 local GLYPH_SEARCH = '🔭'
+local GLYPH_PARKED = nf.md_pause_circle_outline or '⏸' --[[ 󰏦 ]]
 
 local GLYPH_UNSEEN_NUMBERED_BOX = {
    [1] = nf.md_numeric_1_box_multiple, --[[ 󰼏 ]]
@@ -436,6 +438,16 @@ M.setup = function(opts)
       local fg = tab.is_active and '#11111B' or '#1C1B19'
       local edge = 'rgba(0, 0, 0, 0.4)'
 
+      -- Parked tabs (utils/drawer.lua) recede: dim, pause glyph, no activity dot
+      local parked = drawer.is_parked(tab.tab_title)
+      if parked then
+         icon = GLYPH_PARKED
+         if not tab.is_active then
+            bg = hover and '#45475A' or '#313244'
+            fg = '#6C7086'
+         end
+      end
+
       -- For plain SSH domains (multiplexing='None'), foreground_process_name
       -- returns the local ssh client, not the remote process — use unseen output
       -- as a proxy. Same fallback when the mux doesn't populate the field.
@@ -445,7 +457,7 @@ M.setup = function(opts)
       else
          has_running_proc = not SHELL_NAMES[proc:lower()]
       end
-      local show_indicator = not tab.is_active and has_running_proc
+      local show_indicator = not tab.is_active and not parked and has_running_proc
 
       local cells = {
          { Background = { Color = edge } },

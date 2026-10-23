@@ -74,6 +74,14 @@
 
   > See: [key bindings](#windows-workspaces--domains) for usage
 
+- [**Tab Drawer**](utils/drawer.lua)
+
+  Park tabs that are waiting on external input: they are dimmed, moved to the end of
+  the tab bar and skipped by tab cycling. A picker resumes or closes them and shows
+  how long each has been parked.
+
+  > See: [key bindings](#drawer) for usage
+
 - **tmux-style Leader Bindings**
 
   A <kbd>LEADER</kbd>-based keymap (<kbd>SUPER</kbd>+<kbd>s</kbd>) for tabs, windows,
@@ -303,8 +311,8 @@ The <kbd>SUPER</kbd> modifier maps to a physical key per OS:
 | ------------------------------------------ | ------------------------------------- |
 | <kbd>LEADER</kbd> <kbd>n</kbd>             | `SpawnTab` <sub>(CurrentPaneDomain)</sub> |
 | <kbd>LEADER</kbd> <kbd>w</kbd>             | `CloseCurrentTab` <sub>(no confirm)</sub> |
-| <kbd>LEADER</kbd> <kbd>Space</kbd>         | Next Tab                              |
-| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>Space</kbd> | Previous Tab                 |
+| <kbd>LEADER</kbd> <kbd>Space</kbd>         | Next Tab <sub>(skips parked)</sub>    |
+| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>Space</kbd> | Previous Tab <sub>(skips parked)</sub> |
 | <kbd>LEADER</kbd> <kbd>1</kbd>…<kbd>9</kbd> | Activate Tab 1-9                     |
 | <kbd>LEADER</kbd> <kbd>0</kbd>             | Activate last Tab                     |
 | <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>,</kbd> | Move Tab left                    |
@@ -331,6 +339,40 @@ Attaching a WezTerm-multiplexing domain imports every window and tab the remote
 mux holds. Doing it explicitly with <kbd>LEADER</kbd> <kbd>a</kbd> keeps that off
 the normal tab-spawn path, where it shows up as tabs from one window appearing in
 another.
+
+#### Drawer
+
+Marks tabs that are waiting on external input as parked: stamped, dimmed and moved to
+the end of the tab bar. <kbd>LEADER</kbd> <kbd>Space</kbd> / <kbd>Shift</kbd>+<kbd>Space</kbd>
+skip them; <kbd>LEADER</kbd> <kbd>1</kbd>…<kbd>9</kbd> still reach them.
+
+| Keys                                            | Action                                                 |
+| ----------------------------------------------- | ------------------------------------------------------ |
+| <kbd>LEADER</kbd> <kbd>p</kbd>                  | Park the active tab (max 10)                           |
+| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>p</kbd> | Fuzzy-select a parked tab, unpark it and jump to it    |
+| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>x</kbd> | Fuzzy-select a parked tab and close it                 |
+
+Pickers show time parked (red after 3 days), title and domain. Parked tabs are not
+moved to another window: on a WezTerm-multiplexing domain the client keeps a stale
+copy of any moved pane (20240203, unfixed upstream).
+
+Attaching a WezTerm-multiplexing domain imports every window and tab the remote
+mux holds. Doing it explicitly with <kbd>LEADER</kbd> <kbd>a</kbd> keeps that off
+the normal tab-spawn path, where it shows up as tabs from one window appearing in
+another.
+
+#### Drawer
+
+Parks tabs that are waiting on external input in a hidden `drawer` workspace. Processes
+keep running; splits are not kept (each pane comes back as its own tab).
+
+| Keys                                            | Action                                                        |
+| ----------------------------------------------- | ------------------------------------------------------------- |
+| <kbd>LEADER</kbd> <kbd>p</kbd>                  | Park the active tab (max 10)                                  |
+| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>p</kbd> | Fuzzy-select a parked tab and move it into the current window |
+| <kbd>LEADER</kbd> <kbd>Shift</kbd>+<kbd>x</kbd> | Fuzzy-select a parked tab and kill it                         |
+
+Pickers show time parked (red after 3 days), title and domain.
 
 &nbsp;
 

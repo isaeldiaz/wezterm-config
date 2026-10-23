@@ -2,6 +2,7 @@ local wezterm = require('wezterm')
 local platform = require('utils.platform')
 local backdrops = require('utils.backdrops')
 local domain_picker = require('utils.domain-picker')
+local drawer = require('utils.drawer')
 local act = wezterm.action
 
 local mod = {}
@@ -105,9 +106,9 @@ local keys = {
    { key = 'k',          mods = mod.SUPER_REV, action = act.AdjustPaneSize({ 'Up', 2 }) },
    { key = 'l',          mods = mod.SUPER_REV, action = act.AdjustPaneSize({ 'Right', 2 }) },
 
-   -- tabs: navigation (mirrors tmux window navigation)
-   { key = 'Space',      mods = 'LEADER',     action = act.ActivateTabRelative(1) },
-   { key = 'Space',      mods = 'LEADER|SHIFT', action = act.ActivateTabRelative(-1) },
+   -- tabs: navigation (mirrors tmux window navigation; skips parked tabs)
+   { key = 'Space',      mods = 'LEADER',       action = drawer.next },
+   { key = 'Space',      mods = 'LEADER|SHIFT', action = drawer.prev },
 
    -- tabs: reorder (mirrors tmux swap-window)
    { key = ',',          mods = 'LEADER|SHIFT', action = act.MoveTabRelative(-1) },
@@ -214,6 +215,12 @@ local keys = {
          end),
       }),
    },
+
+   -- drawer: mark tabs waiting on something as parked (see utils/drawer.lua), pick
+   -- one to resume, or discard it
+   { key = 'p',          mods = 'LEADER',       action = drawer.park },
+   { key = 'p',          mods = 'LEADER|SHIFT', action = drawer.unpark },
+   { key = 'x',          mods = 'LEADER|SHIFT', action = drawer.discard },
 
    -- domains: attach/detach whichever one you pick (see utils/domain-picker.lua)
    { key = 'a',          mods = 'LEADER',     action = domain_picker.toggle },
